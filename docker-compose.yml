@@ -1,0 +1,33 @@
+services:
+  postgres-db:
+    image: postgres:16.9-alpine3.20
+    container_name: postgres-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  nextjs-app:
+    image: yourdockerhub/nextjs-app:latest
+    container_name: nextjs-app
+    restart: unless-stopped
+    depends_on:
+      - postgres-db
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./nextjs-app/.env:/app/.env:ro  # env mounted
+  nodejs-app:
+    image: yourdockerhub/nodejs-app:latest
+    container_name: nodejs-app
+    restart: unless-stopped
+    depends_on:
+      - postgres-db
+    ports:
+      - "4000:8081"
+    volumes:
+      - ./nodejs-app/.env:/app/.env:ro  # env mounted
+
+volumes:
+  pgdata:
